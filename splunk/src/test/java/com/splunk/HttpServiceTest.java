@@ -246,16 +246,25 @@ public class HttpServiceTest extends SDKTestCase {
 
     @Test
     public void testSendProxy() {
+        String proxyHost = (String) command.opts.get("proxy-host");
+        if(proxyHost == null){
+            return;
+        }
+        if(command.opts.get("proxy-port") == null){
+            return;
+        }
+        int proxyPort = (int) command.opts.get("proxy-port");
         String proxyUser = (String) command.opts.get("proxy-user");
         String proxyPassword = (String) command.opts.get("proxy-password");
-        String proxyHost = (String) command.opts.get("proxy-host");
-        int proxyPort = (int) command.opts.get("proxy-port");
-       Authenticator.setDefault(new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(proxyUser, proxyPassword.toCharArray());
-            }
-        });
+        if(proxyUser != null && proxyPassword != null){
+            Authenticator.setDefault(new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(proxyUser, proxyPassword.toCharArray());
+                }
+            });
+        }
+
 
         Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
         service.setProxy(proxy);
