@@ -82,6 +82,7 @@ public class HttpService {
 
     protected Integer connectTimeout = null;
     protected Integer readTimeout = null;
+    protected Proxy proxy = null;
 
     private String prefix = null;
 
@@ -366,6 +367,24 @@ public class HttpService {
     }
 
     /**
+     * Returns the proxy used by this service.
+     *
+     * @return The proxy.
+     */
+    public Proxy getProxy() {
+        return proxy;
+    }
+
+    /**
+     * Sets the proxy used by this service.
+     *
+     * @param proxy The proxy.
+     */
+    public void setProxy(Proxy proxy) {
+        this.proxy = proxy;
+    }
+
+    /**
      * Issues a POST request against the service using a given path.
      *
      * @param path The request path.
@@ -445,7 +464,8 @@ public class HttpService {
         // Create and initialize the connection object
         HttpURLConnection cn;
         try {
-            cn = (HttpURLConnection) url.openConnection();
+            cn = this.proxy == null ? (HttpURLConnection) url.openConnection() :
+                    (HttpURLConnection) url.openConnection(this.proxy);
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage(), e);
         }

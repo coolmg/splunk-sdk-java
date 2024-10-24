@@ -22,6 +22,10 @@ import org.junit.Test;
 
 import javax.net.ssl.*;
 import java.io.ByteArrayOutputStream;
+import java.net.Authenticator;
+import java.net.InetSocketAddress;
+import java.net.PasswordAuthentication;
+import java.net.Proxy;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.security.NoSuchAlgorithmException;
@@ -238,5 +242,35 @@ public class HttpServiceTest extends SDKTestCase {
         if (javaVersion < 8) {
             validateSSLProtocol(s, SSLSecurityProtocol.SSLv3);
         }
+    }
+
+    @Test
+    public void testSendProxy() {
+        String proxyHost = (String) command.opts.get("proxy-host");
+        if(proxyHost == null){
+            return;
+        }
+        if(command.opts.get("proxy-port") == null){
+            return;
+        }
+        int proxyPort = (int) command.opts.get("proxy-port");
+        String proxyUser = (String) command.opts.get("proxy-user");
+        String proxyPassword = (String) command.opts.get("proxy-password");
+        if(proxyUser != null && proxyPassword != null){
+            Authenticator.setDefault(new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(proxyUser, proxyPassword.toCharArray());
+                }
+            });
+        }
+
+
+        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
+        service.setProxy(proxy);
+        RequestMessage request = new RequestMessage("GET");
+        ResponseMessage response = service.send("/services", request);
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertTrue(firstLineIsXmlDtd(response.getContent()));
     }
 }

@@ -91,6 +91,14 @@ public class Command {
         rules.addOption(null, "scheme", true, "Scheme (default https)");
         rules.addOption(null, "username", true, "Username to login with");
         rules.addOption(null, "password", true, "Password to login with");
+        rules.addOption(null, "proxy-user", true, "Proxy Username to login with");
+        rules.addOption(null, "proxy-password", true, "Proxy Password to login with");
+        rules.addOption(null, "proxy-host", true, "Proxy Host name");
+        rules.addOption(OptionBuilder
+                .withLongOpt("proxy-port")
+                .hasArg(true)
+                .withType(Integer.class)
+                .create());
         rules.addOption(null, "app", true, "App/namespace context");
         rules.addOption(null, "owner", true, "Owner/user context");
         // This is here only for compatibility with the JavaScript SDK's .splunkrc.

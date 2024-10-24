@@ -29,6 +29,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import javax.net.ssl.HttpsURLConnection;
+
 
 /**
  * Base test case for SDK test suite.
@@ -95,6 +97,7 @@ public abstract class SDKTestCase {
     public static void preClassLoadActions() {
         // Bypass the certification validation here.
         HttpService.setValidateCertificates(false);
+        HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
     }
 
     @Before
